@@ -2,6 +2,8 @@
 # Strict public/current documentation gate plus repository-wide debt ratchet.
 # Historical and append-only evidence records remain provenance-sensitive: the
 # ratchet prevents new debt without requiring bulk rewrites of retained evidence.
+# The paste-hygiene gate additionally blocks captured terminal output in Markdown
+# prose, which is structurally valid Markdown and therefore invisible to markdownlint.
 
 name: Doc Lint
 
@@ -17,6 +19,7 @@ on:
       - '.markdownlint.json'
       - '.github/markdownlint-repo-baseline.json'
       - '.github/workflows/doc-lint.yml'
+      - 'scripts/markdown_paste_hygiene_check.py'
   pull_request:
     branches: [main]
     paths:
@@ -25,6 +28,7 @@ on:
       - '.markdownlint.json'
       - '.github/markdownlint-repo-baseline.json'
       - '.github/workflows/doc-lint.yml'
+      - 'scripts/markdown_paste_hygiene_check.py'
 
 jobs:
   markdownlint:
@@ -43,6 +47,12 @@ jobs:
 
       - name: Install markdownlint-cli
         run: npm install -g markdownlint-cli@0.39.0
+
+      - name: Run Markdown paste-hygiene gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/markdown_paste_hygiene_check.py
 
       - name: Run markdownlint on public/current entry points
         run: |
@@ -142,6 +152,7 @@ jobs:
           echo "- Linter: markdownlint-cli 0.39.0" >> "$GITHUB_STEP_SUMMARY"
           echo "- Node.js: 24" >> "$GITHUB_STEP_SUMMARY"
           echo "- Public/current gate: README surfaces + docs/architecture/DGAF_V1_*.md" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Paste-hygiene gate: scripts/markdown_paste_hygiene_check.py (fail-closed, repository-wide Markdown)" >> "$GITHUB_STEP_SUMMARY"
           echo "- Repository-wide observed lint exit: ${{ steps.repo_wide_audit.outputs.exit_code }}" >> "$GITHUB_STEP_SUMMARY"
           echo "- Repository-wide violations: ${{ steps.repo_wide_summary.outputs.total }}" >> "$GITHUB_STEP_SUMMARY"
           echo "- Repository-wide affected files: ${{ steps.repo_wide_summary.outputs.files }}" >> "$GITHUB_STEP_SUMMARY"

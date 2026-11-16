@@ -1855,11 +1855,12 @@
         "REPOSITORY",
         "DOCUMENTATION"
       ],
-      "assertion": "Public/current documentation surfaces satisfy strict markdown lint while repository-wide markdown debt does not increase beyond the retained baseline.",
+      "assertion": "Public/current documentation surfaces satisfy strict markdown lint, Markdown prose outside fenced code blocks contains no pasted terminal/shell output, and repository-wide markdown debt does not increase beyond the retained baseline.",
       "owner": "DGAF documentation-quality workflow",
       "implementation": [
         ".github/workflows/doc-lint.yml",
-        ".github/markdownlint-repo-baseline.json"
+        ".github/markdownlint-repo-baseline.json",
+        "scripts/markdown_paste_hygiene_check.py"
       ],
       "trigger": [
         "pull_request",
@@ -1869,13 +1870,14 @@
       "evidence": [
         "workflow conclusion",
         "repository-wide markdownlint report",
-        "rule-count summary"
+        "rule-count summary",
+        "Markdown paste-hygiene gate annotations"
       ],
       "verdicts": [
         "SUCCESS",
         "FAILURE"
       ],
-      "decision_effect": "Provides current-surface documentation lint assurance and a non-increasing debt ratchet for the repository-wide markdown corpus.",
+      "decision_effect": "Provides current-surface documentation lint assurance, blocks pasted terminal output in Markdown prose, and applies a non-increasing debt ratchet for the repository-wide markdown corpus.",
       "non_effects": [
         "Does not establish factual truth of documentation claims.",
         "Does not establish scientific efficacy or independent validation.",
@@ -1884,7 +1886,8 @@
       "fail_behavior": "FAIL_CLOSED_FOR_PUBLIC_CURRENT_SURFACE_AND_DEBT_RATCHET",
       "independence": "SAME_REPOSITORY_NONINDEPENDENT",
       "known_gaps": [
-        "Repository-wide audit step intentionally tolerates existing debt before enforcing the non-increasing ratchet; historical evidence may remain lint-imperfect by design."
+        "Repository-wide audit step intentionally tolerates existing debt before enforcing the non-increasing ratchet; historical evidence may remain lint-imperfect by design.",
+        "The paste-hygiene gate is pattern-based over Markdown prose only; it detects known terminal-output signatures and does not guarantee detection of every form of accidental command-output capture."
       ],
       "lifecycle": "CURRENT"
     },
