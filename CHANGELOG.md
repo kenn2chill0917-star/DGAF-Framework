@@ -4,6 +4,27 @@
 
 ---
 
+## [2026-11-16] — README Repair & Markdown Paste-Hygiene Gate
+
+### Documentation repair
+
+- Removed 70 lines of accidental terminal output that commit `df9e69ed41536b8db3685dd1b25001d7db84e63b` ("Update README.md") prepended above the `# DGAF-Framework` heading, and that reached protected `main` through the merge of #1 (`b21a3ba`).
+- The captured block contained `git remote -v` output for an unrelated local repository, a bare directory listing from an unrelated project, and an agent shell marker. No credentials were present.
+- `README.md` was restored byte-for-byte to its pre-`df9e69e` content (SHA-256 `c75f694a00c157ded9705eb0ca2b50814670b7cbc02b55ff438f918130490164`). `README.md` was the only affected file; history was not rewritten.
+
+### Markdown paste-hygiene gate
+
+- Added `scripts/markdown_paste_hygiene_check.py`: a deterministic, fence-aware scanner that fails closed when Markdown prose outside fenced code blocks contains known terminal-output signatures (agent shell markers, `git remote -v` output, ANSI escape sequences, shell prompts, Python tracebacks, command-not-found errors, npm diagnostics) or a run of bare directory-listing lines. Terminal transcripts presented inside fenced code blocks remain allowed.
+- Wired the gate into `.github/workflows/doc-lint.yml` as a blocking step within the existing Doc Lint job; `.markdownlint.yml` and the repository-wide debt ratchet baseline are unchanged.
+- Registered the script under `AUD-CI-DOC-LINT` in `registry/audit_catalog.v1.json`, including a declared known gap that the detector is pattern-based over Markdown prose only.
+- Added `tests/test_markdown_paste_hygiene.py` covering detection, fenced-block exemption, the bare-listing threshold, and a repository-tree regression guard.
+
+### Scientific/control non-effects
+
+- This change is documentation and repository-hygiene tooling only. It does not alter governance authority, evidence admissibility, or any scientific or efficacy position.
+
+---
+
 ## [2026-09-18] — Documentation & Materialization Tooling Reconciliation
 
 ### Current-facing authority and documentation
