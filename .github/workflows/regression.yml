@@ -72,7 +72,10 @@ jobs:
       - name: Require runtime bypass credential
         run: |
           set -euo pipefail
-          test -n "$VERCEL_AUTOMATION_BYPASS_SECRET"
+          if [ -z "$VERCEL_AUTOMATION_BYPASS_SECRET" ]; then
+            echo "::error::VERCEL_AUTOMATION_BYPASS_SECRET is empty or not set. Add it under Settings > Secrets and variables > Actions."
+            exit 1
+          fi
 
       - name: Health preflight
         run: |
